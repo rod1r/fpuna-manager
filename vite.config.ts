@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       strategies: "injectManifest",
-      srcDir: ".",
+      srcDir: "public",
       filename: "sw.js",
       manifestFilename: "manifest.json",
       injectRegister: false,
@@ -21,6 +21,7 @@ export default defineConfig({
       ],
       injectManifest: {
         globPatterns: ["**/*.{html,js,css,json,png,svg,ico}"],
+        globIgnores: ["sw.js"],
         maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
       },
     }),

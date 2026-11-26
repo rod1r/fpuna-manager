@@ -74,6 +74,10 @@ function isAppCodeRequest(request, url) {
       /\.(?:html|css|js)$/i.test(url.pathname));
 }
 
+function isHashedViteAsset(url) {
+  return /\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/i.test(url.pathname);
+}
+
 function isStaticRequest(request, url) {
   if (url.origin !== self.location.origin) {
     return ["font", "image", "script", "style"].includes(request.destination);
@@ -86,7 +90,9 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (isAppCodeRequest(request, url)) {
+  if (url.origin === self.location.origin && isHashedViteAsset(url)) {
+    event.respondWith(cacheFirst(request, event));
+  } else if (isAppCodeRequest(request, url)) {
     event.respondWith(networkFirst(request, event));
   } else if (isStaticRequest(request, url)) {
     event.respondWith(cacheFirst(request, event));
